@@ -2,14 +2,14 @@
 """
 Created on Mon Jan 29 11:54:00 2018
 
-@author: t.andreev
+@author: timandreev
 """
 
 import requests
 import json
 import pandas as pd
 
-token = 'AQAAAAAcs7MiAAMfZXmno7tMWEFLivA3AIdIWA8'
+token = 'TOKEN'
 
 """
 Получение списка клиентов
@@ -55,16 +55,13 @@ while not HasAllClientLoginsReceived:
 
 
 """
-
 Создание отчета по бюджетам
-
 """
 
 BudgetURL = "https://api.direct.yandex.ru/live/v4/json/"
-
-# Создание запроса по бюджетам
 AmountList = {}
 
+# Создание HTTP-заголовков запроса
 
 for login in range(len(ClientList)):
     params = {
