@@ -59,9 +59,12 @@ while not HasAllClientLoginsReceived:
 """
 
 BudgetURL = "https://api.direct.yandex.ru/live/v4/json/"
-AmountList = {}
 
-# Создание HTTP-заголовков запроса
+# Создание запроса по бюджетам
+# Создание двух словарей для текущего остатка и дневного бюджета
+AmountDict = {}
+DayBudgetDict = {}
+
 
 for login in range(len(ClientList)):
     params = {
@@ -78,12 +81,19 @@ for login in range(len(ClientList)):
     jdata = json.dumps(params, ensure_ascii=False).encode('utf8')  
     result = requests.post(BudgetURL, data = jdata).json()
 
-# Добавление результатов в словарь
+
+# Добавление результатов в словари
     try:
-        AmountList[result["data"]["Accounts"][0]["Login"]] = result["data"]["Accounts"][0]["Amount"]
+        AmountDict[result["data"]["Accounts"][0]["Login"]] = result["data"]["Accounts"][0]["Amount"]
+        DayBudgetDict[result["data"]["Accounts"][0]["Login"]] = result["data"]["Accounts"][0]["AccountDayBudget"]["Amount"]
     except IndexError:
+        pass
+    except KeyError:
         pass
  
 # Преобразование в серию и запись в файл       
-Amounts = pd.Series(AmountList)
+AmountSeries = pd.Series(AmountDict)
+DayBudgetSeries = pd.Series(DayBudgetDict)
+
+Amounts = pd.concat([AmountSeries, DayBudgetSeries], axis = 1)
 Amounts.to_csv("Amounts.csv", sep='\t', encoding='utf-8')
